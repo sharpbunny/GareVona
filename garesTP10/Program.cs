@@ -12,6 +12,12 @@ namespace garesTP10
 {
     class Program
     {
+        public static gare maGare { get; private set; }
+        public static ville maVille { get; private set; }
+        public static nature maNature { get; private set; }
+        public static ligne maLigne { get; private set; }
+        public static cp monCp { get; private set; }
+
         static void Main(string[] args)
         {
             using (var db = new garesDataModel())
@@ -33,9 +39,475 @@ namespace garesTP10
                                 cp = data[7],
                                 ville = data[8]
                             };
-            }
-            
 
+                var filtreSurCP = from tabCP in query
+                                  select tabCP.cp;
+
+                var cpFiltre = filtreSurCP.Distinct();
+
+                List<cp> listeCP = new List<cp> { };
+
+                foreach (var ajoutCP in cpFiltre)
+                {
+                    int nb;
+                    bool resultat = Int32.TryParse(ajoutCP, out nb);
+
+                    if (resultat)
+                    {
+                        monCp = new cp
+                        {
+                            code_postal = nb
+                            
+                        };
+                        try
+                        {
+                            db.cps.Add(monCp);
+                            listeCP.Add(monCp);
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e.Message);
+                        }
+                    }
+                }
+                db.SaveChanges();
+
+                var filtreSurVille = from tabVille in query
+                                     select tabVille.ville;
+
+                var villeFiltre = filtreSurVille.Distinct();
+
+                List<ville> listeVille = new List<ville> { };
+
+                foreach (var ajoutVille in villeFiltre)
+                {
+
+                    maVille = new ville
+                    {
+                        nom_ville = ajoutVille
+                    };
+
+                    try
+                    {
+                        db.villes.Add(maVille);
+                        listeVille.Add(maVille);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                    }
+                }
+                db.SaveChanges();
+
+
+                var filtreSurVilleGare = from tabVille in db.villes
+                                         select tabVille;
+
+                var numeroVille = from nomVillePourGare in query
+                                  join tab in filtreSurVilleGare
+                                  on nomVillePourGare.ville equals tab.nom_ville
+                                  select new { nomville = nomVillePourGare.ville, numerodeVillePourGare = tab.numero_ville, nomgare = nomVillePourGare.nom };
+
+                var filtrenumeroGare = numeroVille.Distinct();
+
+                List<gare> listeGare = new List<gare> { };
+                foreach (var ajoutGare in numeroVille)
+                {
+
+                    maGare = new gare
+                    {
+                        nom_gare = ajoutGare.nomgare,
+                        numero_ville = ajoutGare.numerodeVillePourGare
+                    };
+
+                    try
+                    {
+                        db.gares.Add(maGare);
+                        listeGare.Add(maGare);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                    }
+                }
+                db.SaveChanges();
+
+                var filtreSurNature = from tabNature in query
+                                      select tabNature.nature;
+
+                var natureFiltre = filtreSurNature.Distinct();
+
+                List<nature> listeNature = new List<nature> { };
+
+                foreach (var ajout in natureFiltre)
+                {
+                    maNature = new nature
+                    {
+                        nom_nature = ajout
+                        
+                        
+                    };
+
+                    try
+                    {
+                        db.natures.Add(maNature);
+                        listeNature.Add(maNature);
+                        
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                    }
+                }
+                db.SaveChanges();
+
+                var filtreSurLigne = from tabLigne in query
+                                     select new { ligne = tabLigne.codeLigne, latitude = tabLigne.latitude, longitude = tabLigne.longitude };
+
+                var ligneFiltre = filtreSurLigne.Distinct();
+
+                List<ligne> listeLigne = new List<ligne> { };
+
+                foreach (var ajout in ligneFiltre)
+                {
+                    int nombreCodeLigne;
+                    bool resultatNombreCodeLigne = Int32.TryParse(ajout.ligne, out nombreCodeLigne);
+
+
+                    maLigne = new ligne
+                    {
+                        code_ligne = nombreCodeLigne,
+                        latitude = ajout.latitude,
+                        longitude = ajout.longitude
+                        
+                    };
+
+                    try
+                    {
+                        db.lignes.Add(maLigne);
+                        listeLigne.Add(maLigne);
+
+
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                    }
+
+                }
+                db.SaveChanges();
+
+
+                //monCp.villes = listeVille; //table relationnelle 'inclus'
+                
+                //maLigne.gares = listeGare; //table relationnelle 'peut_contenir'
+                
+                //maNature.gares = listeGare; //table relationnelle 'possède' 
+                
+                
+
+                //db.SaveChanges();
+
+            }
+
+        }
+        public static void RemplirBDD()
+        {
+            using (var db = new garesDataModel())
+            {
+                string[] fichier = File.ReadAllLines("C:\\Users\\34011-14-06\\Desktop\\TP 10 n° 1\\gares_ferroviaires_de_tous_types_exploitees_ou_non.csv");
+
+                var query = from csvline in fichier
+                            let data = csvline.Split(';')
+
+                            select new
+                            {
+                                codeLigne = data[0],
+                                nom = data[1],
+                                nature = data[2],
+                                latitude = data[3],
+                                longitude = data[4],
+                                gps = data[5],
+                                dpt = data[6],
+                                cp = data[7],
+                                ville = data[8]
+                            };
+
+                var filtreSurCP = from tabCP in query
+                                  select tabCP.cp;
+
+                var cpFiltre = filtreSurCP.Distinct();
+
+                foreach (var ajoutCP in cpFiltre)
+                {
+                    int nb;
+                    bool resultat = Int32.TryParse(ajoutCP, out nb);
+
+                    if (resultat)
+                    {
+                        monCp = new cp
+                        {
+                            code_postal = nb
+                        };
+                        try
+                        {
+                            db.cps.Add(monCp);
+
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e.Message);
+                        }
+                    }
+                }
+                db.SaveChanges();
+
+                var filtreSurVille = from tabVille in query
+                                     select tabVille.ville;
+
+                var villeFiltre = filtreSurVille.Distinct();
+
+                List<ville> listeVille = new List<ville> { };
+
+                foreach (var ajoutVille in villeFiltre)
+                {
+
+                    maVille = new ville
+                    {
+                        nom_ville = ajoutVille
+                    };
+
+                    try
+                    {
+                        db.villes.Add(maVille);
+                        listeVille.Add(maVille);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                    }
+                }
+                db.SaveChanges();
+
+
+                var filtreSurVilleGare = from tabVille in db.villes
+                                         select tabVille;
+
+                var numeroVille = from nomVillePourGare in query
+                                  join tab in filtreSurVilleGare
+                                  on nomVillePourGare.ville equals tab.nom_ville
+                                  select new { nomville = nomVillePourGare.ville, numerodeVillePourGare = tab.numero_ville, nomgare = nomVillePourGare.nom };
+
+                var filtrenumeroGare = numeroVille.Distinct();
+
+                List<gare> listeGare = new List<gare> { };
+                foreach (var ajoutGare in filtrenumeroGare)
+                {
+
+                    maGare = new gare
+                    {
+                        nom_gare = ajoutGare.nomgare,
+                        numero_ville = ajoutGare.numerodeVillePourGare
+                    };
+
+                    try
+                    {
+                        db.gares.Add(maGare);
+                        listeGare.Add(maGare);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                    }
+                }
+                db.SaveChanges();
+
+                var filtreSurNature = from tabNature in query
+                                      
+                                      select tabNature;
+
+                var natureFiltre = filtreSurNature.Distinct();
+
+                List<nature> listeNature = new List<nature> { };
+
+                foreach (var ajoutNature in natureFiltre)
+                {
+                    maNature = new nature
+                    {
+                        nom_nature = ajoutNature.nature
+                    };
+
+                    try
+                    {
+                        db.natures.Add(maNature);
+                        listeNature.Add(maNature);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                    }
+                }
+                db.SaveChanges();
+
+                var filtreSurLigne = from tabLigne in query
+                                     select new { ligne = tabLigne.codeLigne, latitude = tabLigne.latitude, longitude = tabLigne.longitude };
+
+                var ligneFiltre = filtreSurLigne.Distinct();
+
+                List<ligne> listeLigne = new List<ligne> { };
+
+                foreach (var ajout in ligneFiltre)
+                {
+                    int nombreCodeLigne;
+                    bool resultatNombreCodeLigne = Int32.TryParse(ajout.ligne, out nombreCodeLigne);
+
+
+                    maLigne = new ligne
+                    {
+                        code_ligne = nombreCodeLigne,
+                        latitude = ajout.latitude,
+                        longitude = ajout.longitude,
+                    };
+
+                    try
+                    {
+                        db.lignes.Add(maLigne);
+                        listeLigne.Add(maLigne);
+
+
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                    }
+
+                }
+                db.SaveChanges();
+
+
+                monCp.villes = listeVille; //table relationnelle 'inclus'
+                maLigne.gares = listeGare; //table relationnelle 'peut_contenir'
+                maNature.gares = listeGare; //table relationnelle 'possède' 
+                db.SaveChanges();
+
+            }
+        }
+        public static void ListeDeTypeDesserteFretDesGaresEtLignes()
+        {
+            using (var db = new garesDataModel())
+            {
+                string[] fichier = File.ReadAllLines("C:\\Users\\34011-14-06\\Desktop\\TP 10 n° 1\\gares_ferroviaires_de_tous_types_exploitees_ou_non.csv");
+
+                var query = from csvline in fichier
+                            let data = csvline.Split(';')
+
+                            select new
+                            {
+                                codeLigne = data[0],
+                                nom = data[1],
+                                nature = data[2],
+                                latitude = data[3],
+                                longitude = data[4],
+                                gps = data[5],
+                                dpt = data[6],
+                                cp = data[7],
+                                ville = data[8]
+                            };
+
+                var garesLigneFret = from tabg in query
+                                     join tabn in db.natures
+                                     on tabg.nature equals tabn.nom_nature
+                                     where tabn.numero_nature == 8
+                                     orderby tabg.codeLigne
+                                     select new { nomGare = tabg.nom, numLigne = tabg.codeLigne };
+
+
+                Console.WriteLine("Liste des gares de type 'Desserte-fret':");
+                foreach (var affiche in garesLigneFret)
+                {
+                    Console.WriteLine(affiche.numLigne + "    " + affiche.nomGare);
+                }
+            }
+        }
+        public static void ListeGroupeParCodeLigneDesGares()
+        {
+            using (var db = new garesDataModel())
+            {
+                string[] fichier = File.ReadAllLines("C:\\Users\\34011-14-06\\Desktop\\TP 10 n° 1\\gares_ferroviaires_de_tous_types_exploitees_ou_non.csv");
+
+                var query = from csvline in fichier
+                            let data = csvline.Split(';')
+
+                            select new
+                            {
+                                codeLigne = data[0],
+                                nom = data[1],
+                                nature = data[2],
+                                latitude = data[3],
+                                longitude = data[4],
+                                gps = data[5],
+                                dpt = data[6],
+                                cp = data[7],
+                                ville = data[8]
+                            };
+
+                var garesParLigne = from tabl in query
+                                    join tabg in db.gares
+                                    on tabl.nom equals tabg.nom_gare
+                                    orderby tabl.codeLigne
+                                    select new { nomGare = tabg.nom_gare, codeLigne = tabl.codeLigne };
+
+                var ligneGareGroupe = garesParLigne.GroupBy(x => new { x.codeLigne, x.nomGare });
+
+                foreach (var affiche in ligneGareGroupe)
+                {
+                    Console.WriteLine(affiche.Key);
+                }
+            }
+        }
+        public static void TopDepartementSurLesGaresNonExploitees()
+        {
+            using (var db = new garesDataModel())
+            {
+                string[] fichier = File.ReadAllLines("C:\\Users\\34011-14-06\\Desktop\\TP 10 n° 1\\gares_ferroviaires_de_tous_types_exploitees_ou_non.csv");
+
+                var query = from csvline in fichier
+                            let data = csvline.Split(';')
+
+                            select new
+                            {
+                                codeLigne = data[0],
+                                nom = data[1],
+                                nature = data[2],
+                                latitude = data[3],
+                                longitude = data[4],
+                                gps = data[5],
+                                dpt = data[6],
+                                cp = data[7],
+                                ville = data[8]
+                            };
+
+                var garesNonExploitées = from tab in query
+                                         join tabn in db.natures
+                                         on tab.nature equals tabn.nom_nature
+                                         where tabn.numero_nature == 3
+                                         orderby tab.dpt
+                                         select new { codeDpt = tab.dpt, codeNature = tabn.numero_nature, nomGares = tab.nom };
+
+                //Calcul du nombres de gares non exploitées par département.
+                var nbGaresNonExploitéesParDepartement = garesNonExploitées.GroupBy(x => x.codeDpt).Select(xg => new { dpt = xg.Key, nb = xg.Count() });
+                //Classement du nombre de gares par ordre décroissant.
+                var classementNbGares = nbGaresNonExploitéesParDepartement.OrderByDescending(y => y.nb);
+                //sélection de la premiere ligne
+                var selectionNbGaresTop = classementNbGares.Take(1);
+
+                Console.WriteLine("Le département ayant le plus de gares non exploitées\n");
+
+                foreach (var affiche in selectionNbGaresTop)
+                {
+                    Console.WriteLine("Département :" + affiche.dpt + "           " + "Nb :" + affiche.nb + "\n");
+                }
+            }
         }
         public static void PourcentageParNatureDesGares()
         {
@@ -271,8 +743,11 @@ namespace garesTP10
                     {
                         code_ligne = nombreCodeLigne,
                         latitude = ajout.latitude,
-                        longitude = ajout.longitude
+                        longitude = ajout.longitude,
+                        
+
                     };
+
 
                     try
                     {
@@ -373,11 +848,15 @@ namespace garesTP10
 
                 foreach (var ajout in filtrenumeroGare)
                 {
+                    
                     gare maGare = new gare
                     {
                         nom_gare = ajout.nomgare,
-                        numero_ville = ajout.numerodeVillePourGare
+                        numero_ville = ajout.numerodeVillePourGare,
+                        
+                        
                     };
+                    
                     try
                     {
                         db.gares.Add(maGare);
@@ -388,6 +867,7 @@ namespace garesTP10
                     }
                 }
                 db.SaveChanges();
+
             }
         }
         public static void AjoutVille()
