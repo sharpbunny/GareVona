@@ -44,6 +44,18 @@ namespace garesTP10
                                 ville = data[8]
                             };
 
+
+                var relationVilleCP = from tabV in query
+                                      select tabV;
+
+                var filtreRelationVilleCP = relationVilleCP.Distinct();
+
+                foreach(var affiche in filtreRelationVilleCP)
+                {
+                    //Console.WriteLine(affiche.cp + " " + affiche.ville);
+                    db.Database.ExecuteSqlCommand($"INSERT INTO[dbo].[possede]([id_gare], [numero_nature]) VALUES({affiche.cp},{affiche.ville})");
+                }
+                                      
                 
             }
         }
