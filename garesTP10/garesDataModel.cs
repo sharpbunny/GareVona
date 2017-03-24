@@ -18,6 +18,8 @@ namespace garesTP10
         public virtual DbSet<nature> natures { get; set; }
         public virtual DbSet<ville> villes { get; set; }
 
+       
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<cp>()

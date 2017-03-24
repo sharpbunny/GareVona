@@ -3,6 +3,7 @@ using System;
 using System.Data.SqlClient;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,8 +21,11 @@ namespace garesTP10
 
         static void Main(string[] args)
         {
+
             using (var db = new garesDataModel())
             {
+
+
                 string[] fichier = File.ReadAllLines("C:\\Users\\34011-14-06\\Desktop\\TP 10 n° 1\\gares_ferroviaires_de_tous_types_exploitees_ou_non.csv");
 
                 var query = from csvline in fichier
@@ -40,176 +44,80 @@ namespace garesTP10
                                 ville = data[8]
                             };
 
-                var filtreSurCP = from tabCP in query
-                                  select tabCP.cp;
-
-                var cpFiltre = filtreSurCP.Distinct();
-
-                List<cp> listeCP = new List<cp> { };
-
-                foreach (var ajoutCP in cpFiltre)
-                {
-                    int nb;
-                    bool resultat = Int32.TryParse(ajoutCP, out nb);
-
-                    if (resultat)
-                    {
-                        monCp = new cp
-                        {
-                            code_postal = nb
-                            
-                        };
-                        try
-                        {
-                            db.cps.Add(monCp);
-                            listeCP.Add(monCp);
-                        }
-                        catch (Exception e)
-                        {
-                            Console.WriteLine(e.Message);
-                        }
-                    }
-                }
-                db.SaveChanges();
-
-                var filtreSurVille = from tabVille in query
-                                     select tabVille.ville;
-
-                var villeFiltre = filtreSurVille.Distinct();
-
-                List<ville> listeVille = new List<ville> { };
-
-                foreach (var ajoutVille in villeFiltre)
-                {
-
-                    maVille = new ville
-                    {
-                        nom_ville = ajoutVille
-                    };
-
-                    try
-                    {
-                        db.villes.Add(maVille);
-                        listeVille.Add(maVille);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e.Message);
-                    }
-                }
-                db.SaveChanges();
-
-
-                var filtreSurVilleGare = from tabVille in db.villes
-                                         select tabVille;
-
-                var numeroVille = from nomVillePourGare in query
-                                  join tab in filtreSurVilleGare
-                                  on nomVillePourGare.ville equals tab.nom_ville
-                                  select new { nomville = nomVillePourGare.ville, numerodeVillePourGare = tab.numero_ville, nomgare = nomVillePourGare.nom };
-
-                var filtrenumeroGare = numeroVille.Distinct();
-
-                List<gare> listeGare = new List<gare> { };
-                foreach (var ajoutGare in numeroVille)
-                {
-
-                    maGare = new gare
-                    {
-                        nom_gare = ajoutGare.nomgare,
-                        numero_ville = ajoutGare.numerodeVillePourGare
-                    };
-
-                    try
-                    {
-                        db.gares.Add(maGare);
-                        listeGare.Add(maGare);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e.Message);
-                    }
-                }
-                db.SaveChanges();
-
-                var filtreSurNature = from tabNature in query
-                                      select tabNature.nature;
-
-                var natureFiltre = filtreSurNature.Distinct();
-
-                List<nature> listeNature = new List<nature> { };
-
-                foreach (var ajout in natureFiltre)
-                {
-                    maNature = new nature
-                    {
-                        nom_nature = ajout
-                        
-                        
-                    };
-
-                    try
-                    {
-                        db.natures.Add(maNature);
-                        listeNature.Add(maNature);
-                        
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e.Message);
-                    }
-                }
-                db.SaveChanges();
-
-                var filtreSurLigne = from tabLigne in query
-                                     select new { ligne = tabLigne.codeLigne, latitude = tabLigne.latitude, longitude = tabLigne.longitude };
-
-                var ligneFiltre = filtreSurLigne.Distinct();
-
-                List<ligne> listeLigne = new List<ligne> { };
-
-                foreach (var ajout in ligneFiltre)
-                {
-                    int nombreCodeLigne;
-                    bool resultatNombreCodeLigne = Int32.TryParse(ajout.ligne, out nombreCodeLigne);
-
-
-                    maLigne = new ligne
-                    {
-                        code_ligne = nombreCodeLigne,
-                        latitude = ajout.latitude,
-                        longitude = ajout.longitude
-                        
-                    };
-
-                    try
-                    {
-                        db.lignes.Add(maLigne);
-                        listeLigne.Add(maLigne);
-
-
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e.Message);
-                    }
-
-                }
-                db.SaveChanges();
-
-
-                //monCp.villes = listeVille; //table relationnelle 'inclus'
                 
-                //maLigne.gares = listeGare; //table relationnelle 'peut_contenir'
-                
-                //maNature.gares = listeGare; //table relationnelle 'possède' 
-                
-                
-
-                //db.SaveChanges();
-
             }
+        }
+        public static void RemplirClesEtrangeresDansTablesAssociations()
+        {
 
+            using (var db = new garesDataModel())
+            {
+
+
+                string[] fichier = File.ReadAllLines("C:\\Users\\34011-14-06\\Desktop\\TP 10 n° 1\\gares_ferroviaires_de_tous_types_exploitees_ou_non.csv");
+
+                var query = from csvline in fichier
+                            let data = csvline.Split(';')
+
+                            select new
+                            {
+                                codeLigne = data[0],
+                                nom = data[1],
+                                nature = data[2],
+                                latitude = data[3],
+                                longitude = data[4],
+                                gps = data[5],
+                                dpt = data[6],
+                                cp = data[7],
+                                ville = data[8]
+                            };
+                //-----------------------------------------------------------------------------------
+                //Remplissage de la table association "possede" (gare et nature)
+                //-----------------------------------------------------------------------------------
+
+                var relationDBNature = from tabg1 in query
+                                          join tabn in db.natures
+                                          on tabg1.nature equals tabn.nom_nature
+
+                                          select new { numNature = tabn.numero_nature, nomNature = tabg1.nature, nomGare = tabg1.nom };
+
+                var relationGareNature = from tabnatg in relationDBNature
+                            join tabng in db.gares
+                            on tabnatg.nomGare equals tabng.nom_gare
+                            select new { numg = tabng.id_gare, nomg = tabnatg.nomGare, numn = tabnatg.numNature };
+
+
+                var filtreRelationGareNature = relationGareNature.Distinct();
+
+                foreach (var affiche in filtreRelationGareNature)
+                {
+                    db.Database.ExecuteSqlCommand($"INSERT INTO[dbo].[possede]([id_gare], [numero_nature]) VALUES({affiche.numg},{ affiche.numn})");
+
+
+                }
+                //-----------------------------------------------------------------------------------
+                //Remplissage de la table association "peut_contenir" (gare et ligne)
+                //-----------------------------------------------------------------------------------
+                var relationGare = from tab in query
+                                   join tabg in db.gares
+                                   on tab.nom equals tabg.nom_gare
+                                   select new { numgare = tabg.id_gare, nomgare = tabg.nom_gare, codeLigne = tab.codeLigne, gps = tab.latitude };
+
+                var relationGareLigne = from tabgare in relationGare
+                                        join tabl in db.lignes
+                                        on tabgare.gps equals tabl.latitude
+                                        select new { nomGare = tabgare.nomgare, numGare = tabgare.numgare, numLigne = tabl.numero_ligne };
+
+                var filtreRelationGareLigne = relationGareLigne.Distinct();
+
+                foreach (var affiche in filtreRelationGareLigne)
+                {
+                    db.Database.ExecuteSqlCommand($"INSERT INTO [dbo].[peut_contenir] ([numero_ligne], [id_gare]) VALUES ({affiche.numLigne},{affiche.numGare})");
+                }
+                //-----------------------------------------------------------------------------------
+                //Remplissage de la table association "inclus" (ville et cp)
+                //-----------------------------------------------------------------------------------
+            }
         }
         public static void RemplirBDD()
         {
@@ -275,6 +183,7 @@ namespace garesTP10
                     maVille = new ville
                     {
                         nom_ville = ajoutVille
+                       
                     };
 
                     try
@@ -324,7 +233,7 @@ namespace garesTP10
 
                 var filtreSurNature = from tabNature in query
                                       
-                                      select tabNature;
+                                      select tabNature.nature;
 
                 var natureFiltre = filtreSurNature.Distinct();
 
@@ -334,7 +243,7 @@ namespace garesTP10
                 {
                     maNature = new nature
                     {
-                        nom_nature = ajoutNature.nature
+                        nom_nature = ajoutNature
                     };
 
                     try
@@ -384,11 +293,10 @@ namespace garesTP10
                 }
                 db.SaveChanges();
 
-
-                monCp.villes = listeVille; //table relationnelle 'inclus'
-                maLigne.gares = listeGare; //table relationnelle 'peut_contenir'
-                maNature.gares = listeGare; //table relationnelle 'possède' 
-                db.SaveChanges();
+                //monCp.villes = listeVille; //table relationnelle 'inclus'
+                //maLigne.gares = listeGare; //table relationnelle 'peut_contenir'
+                //maNature.gares = listeGare; //table relationnelle 'possède' 
+                //db.SaveChanges();
 
             }
         }
