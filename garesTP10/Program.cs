@@ -16,6 +16,10 @@ namespace garesTP10
 
         static void Main(string[] args)
         {
+            AfficherMenu();
+        }
+        public static void AfficherMenu()
+        {
             string choix = "";
             do
             {
@@ -472,15 +476,15 @@ namespace garesTP10
 
                 int compteur = 1;
 
-                Console.WriteLine("entrer un nb entre 1 à 8");
-                Console.WriteLine("\t 1 = Desserte Voyageur");
-                Console.WriteLine("\t 2 = Desserte Voyageur-Infrastructure");
-                Console.WriteLine("\t 3 = Non exploitée");
-                Console.WriteLine("\t 4 = Desserte Fret-Desserte Voyageur-Infrastructure");
-                Console.WriteLine("\t 5 = Desserte Fret-Infrastructure");
-                Console.WriteLine("\t 6 = Infrastructure");
-                Console.WriteLine("\t 7 = Desserte Fret-Desserte Voyageur");
-                Console.WriteLine("\t 8 = Desserte Fret");
+                Console.WriteLine("Entrez un nb entre 1 à 8:\n");
+                Console.WriteLine("\t 1 - Desserte Voyageur");
+                Console.WriteLine("\t 2 - Desserte Voyageur-Infrastructure");
+                Console.WriteLine("\t 3 - Non exploitée");
+                Console.WriteLine("\t 4 - Desserte Fret-Desserte Voyageur-Infrastructure");
+                Console.WriteLine("\t 5 - Desserte Fret-Infrastructure");
+                Console.WriteLine("\t 6 - Infrastructure");
+                Console.WriteLine("\t 7 - Desserte Fret-Desserte Voyageur");
+                Console.WriteLine("\t 8 - Desserte Fret");
 
                 int choix;
                 string nb;

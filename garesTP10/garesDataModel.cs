@@ -19,6 +19,7 @@ namespace garesTP10
         public virtual DbSet<ville> villes { get; set; }
 
        
+       
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
