@@ -20,7 +20,7 @@ namespace garesTP10
             do
             {
                 Console.Clear();
-                Console.WriteLine("Faites votre choix :");
+                Console.WriteLine("Faites votre choix :\n");
                 Console.WriteLine("1 - Lister Les Gares Par Ordre Alphabetique");
                 Console.WriteLine("2 - Lister Les Gares Par Villes");
                 Console.WriteLine("3 - Choix de la Nature des Gares");
