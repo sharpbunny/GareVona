@@ -16,44 +16,42 @@ namespace garesTP10
 
         static void Main(string[] args)
         {
+            
             Console.WriteLine("Faites votre choix :");
             Console.WriteLine("1 - Lister Les Gares Par Ordre Alphabetique");
             Console.WriteLine("2 - Lister Les Gares Par Villes");
             Console.WriteLine("3 - Choix de la Nature des Gares");
-            Console.WriteLine("4 - Pourcentage Par Nature DesGares");
+            Console.WriteLine("4 - Pourcentage Par Nature Des Gares");
             Console.WriteLine("5 - Top Departement Sur Les Gares Non Exploitees");
-            Console.WriteLine("6 - Liste Groupe Par Code Ligne Des Gares");
+            Console.WriteLine("6 - Liste Groupe Par Code Ligne de trains Des Gares");
+            Console.WriteLine("7 - Liste De Type 'Desserte Fret'Des Gares avec les Lignes de trains");
 
             string choix = Console.ReadLine();
 
             switch (choix)
             {
                 case "1":
-                    
                     ListerLesGaresParOrdreAlphabetique();
                     break;
                 case "2":
-                    
                     ListerLesGaresParVilles();
                     break;
                 case "3":
-                    
                     ChoixNaturedesGares();
                     break;
                 case "4":
-                    
                     PourcentageParNatureDesGares();
                     break;
                 case "5":
-                    
                     TopDepartementSurLesGaresNonExploitees();
                     break;
                 case "6":
-                    
                     ListeGroupeParCodeLigneDesGares();
                     break;
+                case "7":
+                    ListeDeTypeDesserteFretDesGaresEtLignes();
+                    break;
             }
-            
         }
         public static void RemplirClesEtrangeresDansTablesAssociations()
         {
@@ -347,14 +345,14 @@ namespace garesTP10
                 var garesParLigne = from tabl in db.lignes
                                     orderby tabl.code_ligne
                                     select tabl;
-                int compteur = 1;
+                
 
                 foreach (var affiche in garesParLigne)
                 {
                     foreach (var gares in affiche.gares)
                     {
-                        Console.WriteLine(compteur + "  " + affiche.code_ligne + "  " + gares.nom_gare);
-                        compteur++;
+                        Console.WriteLine(affiche.code_ligne + "  " + gares.nom_gare);
+                        
                     }
                 }
             }
