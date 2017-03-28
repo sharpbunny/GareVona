@@ -16,42 +16,55 @@ namespace garesTP10
 
         static void Main(string[] args)
         {
-            
-            Console.WriteLine("Faites votre choix :");
-            Console.WriteLine("1 - Lister Les Gares Par Ordre Alphabetique");
-            Console.WriteLine("2 - Lister Les Gares Par Villes");
-            Console.WriteLine("3 - Choix de la Nature des Gares");
-            Console.WriteLine("4 - Pourcentage Par Nature Des Gares");
-            Console.WriteLine("5 - Top Departement Sur Les Gares Non Exploitees");
-            Console.WriteLine("6 - Liste Groupe Par Code Ligne de trains Des Gares");
-            Console.WriteLine("7 - Liste De Type 'Desserte Fret'Des Gares avec les Lignes de trains");
-
-            string choix = Console.ReadLine();
-
-            switch (choix)
+            string choix = "";
+            do
             {
-                case "1":
-                    ListerLesGaresParOrdreAlphabetique();
-                    break;
-                case "2":
-                    ListerLesGaresParVilles();
-                    break;
-                case "3":
-                    ChoixNaturedesGares();
-                    break;
-                case "4":
-                    PourcentageParNatureDesGares();
-                    break;
-                case "5":
-                    TopDepartementSurLesGaresNonExploitees();
-                    break;
-                case "6":
-                    ListeGroupeParCodeLigneDesGares();
-                    break;
-                case "7":
-                    ListeDeTypeDesserteFretDesGaresEtLignes();
-                    break;
+                Console.Clear();
+                Console.WriteLine("Faites votre choix :");
+                Console.WriteLine("1 - Lister Les Gares Par Ordre Alphabetique");
+                Console.WriteLine("2 - Lister Les Gares Par Villes");
+                Console.WriteLine("3 - Choix de la Nature des Gares");
+                Console.WriteLine("4 - Pourcentage Par Nature Des Gares");
+                Console.WriteLine("5 - Top Departement Sur Les Gares Non Exploitees");
+                Console.WriteLine("6 - Liste Groupe Par Code Ligne de trains Des Gares");
+                Console.WriteLine("7 - Liste De Type 'Desserte Fret'Des Gares avec les Lignes de trains");
+                Console.WriteLine("0 - Quitter");
+                choix = Console.ReadLine();
+                switch (choix)
+                {
+                    case "1":
+                        ListerLesGaresParOrdreAlphabetique();
+                        Console.Read();
+                        break;
+                    case "2":
+                        ListerLesGaresParVilles();
+                        Console.Read();
+                        break;
+                    case "3":
+                        ChoixNaturedesGares();
+                        Console.Read();
+                        break;
+                    case "4":
+                        PourcentageParNatureDesGares();
+                        Console.Read();
+                        break;
+                    case "5":
+                        TopDepartementSurLesGaresNonExploitees();
+                        Console.Read();
+                        break;
+                    case "6":
+                        ListeGroupeParCodeLigneDesGares();
+                        Console.Read();
+                        break;
+                    case "7":
+                        ListeDeTypeDesserteFretDesGaresEtLignes();
+                        Console.Read();
+                        break;
+                    case "0":
+                        break;
+                }
             }
+            while (choix != "0");
         }
         public static void RemplirClesEtrangeresDansTablesAssociations()
         {
