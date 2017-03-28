@@ -17,8 +17,8 @@ namespace garesTP10
 
         [Key]
         public int numero_ligne { get; set; }
-
-        public int? code_ligne { get; set; }
+        
+        public int code_ligne { get; set; }
 
         public string latitude { get; set; }
 

@@ -42,6 +42,7 @@ CREATE TABLE nature(
 CREATE TABLE ville(
 	numero_ville INT IDENTITY (1,1) NOT NULL ,
 	nom_ville    VARCHAR (80)  ,
+	dpt          INT   ,
 	CONSTRAINT prk_constraint_ville PRIMARY KEY NONCLUSTERED (numero_ville)
 );
 

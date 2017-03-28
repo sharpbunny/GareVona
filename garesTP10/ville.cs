@@ -18,9 +18,11 @@ namespace garesTP10
 
         [Key]
         public int numero_ville { get; set; }
+        
 
         [StringLength(80)]
         public string nom_ville { get; set; }
+        public int dpt { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<gare> gares { get; set; }
